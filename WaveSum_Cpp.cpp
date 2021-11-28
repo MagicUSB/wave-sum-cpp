@@ -34,16 +34,16 @@ int calculate_step(int size) {
 int main()
 {
 	cout << "Enter the array size: ";
-	int arr_size;
-	cin >> arr_size;
-	vector<long long> arr(arr_size);
+	int array_size;
+	cin >> array_size;
+	vector<long long> arr(array_size);
 	init_array(arr);
-	endPos = arr_size;
+	endPos = array_size;
 	int midPos = endPos / 2 + endPos % 2;
 	long long sum = 0;
 	int step = calculate_step(midPos);
 	int i = 0;
-	int wave_count = arr_size > 1 ? ceil(log(arr_size) / log(2)) : 1;
+	int wave_count = array_size > 1 ? ceil(log(array_size) / log(2)) : 1;
 	for (int w = 0; w < wave_count; w++)
 	{
 		while (i <= midPos)
