@@ -45,18 +45,19 @@ int main()
 	long long sum = 0;
 	//int step = calculate_step(midPos);
 	int wave_count = array_size > 1 ? ceil(log(array_size) / log(2)) : 1;
-	int right_index;
 	for (int w = 0; w < wave_count; w++)
 	{
-#pragma parallel
+//#pragma omp parallel
 		{
-#pragma for shared(arr)
+			//printf("Threads: %d\n\n", omp_get_num_threads());
+#pragma omp parallel for 
 			for (int i = 0; i <= midPos; i++)
 			{
-				//printf("T: %d i: %d\n", omp_get_thread_num(), i);
-				right_index = endPos - i - 1;
+				//printf("W: %d\tT: %d\ti: %d\n", w,  omp_get_thread_num(), i);
+				int right_index = endPos - i - 1;
 				if (i < right_index)
 				{
+//#pragma omp single
 					arr[i] += arr[right_index];
 				}
 			}
