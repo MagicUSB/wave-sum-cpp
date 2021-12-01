@@ -1,10 +1,11 @@
 ﻿#include <iostream>
 #include <vector>
 #include <cmath>
+#include <omp.h>
 
 constexpr int CORE_NUMBER = 2;
 
-int endPos;
+//int endPos;
 
 using namespace std;
 
@@ -15,7 +16,7 @@ void init_array(vector<long long>& arr) {
 	}
 }
 
-void put_sum(vector<long long>& arr, int start_index, int end_index) {
+/*void put_sum(vector<long long>& arr, int start_index, int end_index) {
 	int right_index;
 	for (int i = start_index; i < end_index; i++)
 	{
@@ -26,6 +27,7 @@ void put_sum(vector<long long>& arr, int start_index, int end_index) {
 		}
 	}
 }
+*/
 
 int calculate_step(int size) {
 	return size > 1 ? size / (log(size) / log(CORE_NUMBER)) : 1;
@@ -38,23 +40,30 @@ int main()
 	cin >> array_size;
 	vector<long long> arr(array_size);
 	init_array(arr);
-	endPos = array_size;
+	int endPos = array_size;
 	int midPos = endPos / 2 + endPos % 2;
 	long long sum = 0;
-	int step = calculate_step(midPos);
-	int i = 0;
+	//int step = calculate_step(midPos);
 	int wave_count = array_size > 1 ? ceil(log(array_size) / log(2)) : 1;
+	int right_index;
 	for (int w = 0; w < wave_count; w++)
 	{
-		while (i <= midPos)
+#pragma parallel
 		{
-			put_sum(arr, i, min(i + step, midPos));
-			i += step;
+#pragma for shared(arr)
+			for (int i = 0; i <= midPos; i++)
+			{
+				//printf("T: %d i: %d\n", omp_get_thread_num(), i);
+				right_index = endPos - i - 1;
+				if (i < right_index)
+				{
+					arr[i] += arr[right_index];
+				}
+			}
 		}
 		endPos = midPos;
 		midPos = endPos / 2 + endPos % 2;
-		step = calculate_step(midPos);
-		i = 0;
+		//step = calculate_step(midPos);
 	}
 	cout << "Sum: " << arr[0] << endl;
 	return 0;
